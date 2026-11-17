@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>申报记录 · 虚构填报门户</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">虚构填报门户</span>
+    <span class="fictional">演示系统 · 全部数据均为虚构</span>
+    <span class="spacer"></span>
+    <span id="who"></span>
+    <button id="logout" class="link">退出</button>
+  </header>
+  <main>
+    <h1>申报记录</h1>
+    <p class="muted">草稿自动保存仅作暂存，<strong>不等于完成申报</strong>；点击表单页的「正式提交」并获得回执后才算完成。</p>
+    <table id="records-table">
+      <thead>
+        <tr><th>记录编号</th><th>表单版本</th><th>草稿</th><th>状态</th><th>回执编号</th><th></th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <section class="chaos-panel">
+      <h2>故障注入（演示）</h2>
+      <p class="muted">用于演示自动填写程序的故障控制：让指定记录的提交“响应丢失”（持续生效，浏览器传输层自动重发也会被丢弃），或让草稿保存失败。</p>
+      <label>记录编号 <input id="chaos-record" placeholder="DECL-2026-0005" /></label>
+      <button id="chaos-drop">丢弃该记录的提交响应</button>
+      <button id="chaos-failsave">草稿保存改为失败</button>
+      <button id="chaos-clear">清除全部故障</button>
+      <pre id="chaos-state"></pre>
+    </section>
+  </main>
+  <script src="/list.js"></script>
+</body>
+</html>

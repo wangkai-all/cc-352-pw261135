@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>申报表 · 虚构填报门户</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">虚构填报门户</span>
+    <span class="fictional">演示系统 · 全部数据均为虚构</span>
+    <span class="spacer"></span>
+    <a href="/">记录列表</a>
+    <span id="who"></span>
+  </header>
+  <main>
+    <div id="banner-draft" class="banner">
+      草稿由系统自动保存，仅作暂存，<strong>不等于完成申报</strong>；点击「正式提交」并获得回执后才算完成。
+    </div>
+    <h1 id="form-title">加载中…</h1>
+    <p id="record-meta" class="muted"></p>
+    <div id="save-status" data-state="clean">无未保存修改</div>
+
+    <form id="decl-form" autocomplete="off"></form>
+
+    <div class="actions">
+      <button id="submit-btn" type="button" disabled>正式提交</button>
+      <span class="muted">提交前系统会再次保存草稿；提交以草稿版本号作并发校验。</span>
+    </div>
+
+    <div id="submit-unknown" class="banner danger" hidden>
+      提交结果未知：网络异常。<strong>请勿盲目重复提交</strong>，请先核对记录状态。
+    </div>
+    <div id="submit-conflict" class="banner danger" hidden></div>
+
+    <section id="receipt-panel" hidden>
+      <h2>申报回执</h2>
+      <p id="receipt-note" class="muted"></p>
+      <pre id="receipt-json"></pre>
+    </section>
+  </main>
+  <script src="/portal.js"></script>
+</body>
+</html>

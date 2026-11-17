@@ -1,0 +1,19 @@
+{
+  "name": "filing-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "虚构填报门户 + 浏览器自动填写 + 独立核对服务（全流程演示，无真实身份/真实平台）",
+  "type": "module",
+  "scripts": {
+    "portal": "node portal/server.js",
+    "verifier": "node verifier/server.js",
+    "seed": "node scripts/seed.mjs",
+    "automate": "node automation/run.js",
+    "demo": "bash scripts/demo.sh",
+    "stop": "bash scripts/stop.sh"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "playwright": "^1.49.0"
+  }
+}

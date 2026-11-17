@@ -1,0 +1,129 @@
+{
+  "batch": "2026-Q3 待报批次（虚构演示数据）",
+  "records": [
+    {
+      "recordId": "DECL-2026-0001",
+      "orgId": "ORG-ALPHA",
+      "formVersion": "v1",
+      "fields": {
+        "companyName": "阿尔法示例制造有限公司（虚构）",
+        "creditCode": "DEMO-ALPHA-0001",
+        "contactPerson": "王示例",
+        "contactPhone": "13800000001",
+        "reportPeriod": "2026-Q3",
+        "revenue": "1520.5",
+        "taxPaid": "91.2"
+      }
+    },
+    {
+      "recordId": "DECL-2026-0002",
+      "orgId": "ORG-ALPHA",
+      "formVersion": "v2",
+      "fields": {
+        "companyName": "阿尔法示例制造有限公司（虚构）",
+        "creditCode": "DEMO-ALPHA-0001",
+        "contactPerson": "王示例",
+        "contactPhone": "13800000001",
+        "reportPeriod": "2026-Q3",
+        "revenue": "1520.5",
+        "taxPaid": "91.2",
+        "employees": "128",
+        "energyConsumption": "312.4",
+        "mainProduct": "示例零部件"
+      }
+    },
+    {
+      "recordId": "DECL-2026-0003",
+      "orgId": "ORG-ALPHA",
+      "formVersion": "v2",
+      "fields": {
+        "companyName": "阿尔法示例制造有限公司（虚构）",
+        "creditCode": "DEMO-ALPHA-0001",
+        "contactPerson": "王示例",
+        "contactPhone": "13800000001",
+        "reportPeriod": "2026-Q3",
+        "revenue": "1680.0",
+        "taxPaid": "100.8",
+        "employees": "131",
+        "energyConsumption": "325.0",
+        "mainProduct": "示例零部件"
+      }
+    },
+    {
+      "recordId": "DECL-2026-0004",
+      "orgId": "ORG-ALPHA",
+      "formVersion": "v1",
+      "fields": {
+        "companyName": "阿尔法示例制造有限公司（虚构）",
+        "creditCode": "DEMO-ALPHA-0001",
+        "contactPerson": "李样例",
+        "contactPhone": "13800000002",
+        "reportPeriod": "2026-Q3",
+        "revenue": "980.3",
+        "taxPaid": "58.8"
+      }
+    },
+    {
+      "recordId": "DECL-2026-0005",
+      "orgId": "ORG-ALPHA",
+      "formVersion": "v2",
+      "fields": {
+        "companyName": "阿尔法示例制造有限公司（虚构）",
+        "creditCode": "DEMO-ALPHA-0001",
+        "contactPerson": "王示例",
+        "contactPhone": "13800000001",
+        "reportPeriod": "2026-Q3",
+        "revenue": "1745.6",
+        "taxPaid": "104.7",
+        "employees": "133",
+        "energyConsumption": "330.2",
+        "mainProduct": "示例零部件"
+      }
+    },
+    {
+      "recordId": "DECL-2026-0006",
+      "orgId": "ORG-ALPHA",
+      "formVersion": "v2",
+      "fields": {
+        "companyName": "阿尔法示例制造有限公司（虚构）",
+        "creditCode": "DEMO-ALPHA-0001",
+        "contactPerson": "王示例",
+        "contactPhone": "13800000001",
+        "reportPeriod": "2026-Q3",
+        "revenue": "1600.0",
+        "taxPaid": "96.0",
+        "employees": "130",
+        "energyConsumption": "320.0",
+        "mainProduct": "示例零部件"
+      }
+    },
+    {
+      "recordId": "DECL-2026-0007",
+      "orgId": "ORG-BETA",
+      "formVersion": "v1",
+      "fields": {
+        "companyName": "贝塔示例贸易有限公司（虚构）",
+        "creditCode": "DEMO-BETA-0007",
+        "contactPerson": "赵演示",
+        "contactPhone": "13800000003",
+        "reportPeriod": "2026-Q3",
+        "revenue": "640.0",
+        "taxPaid": "38.4"
+      }
+    },
+    {
+      "recordId": "DECL-2026-0008",
+      "orgId": "ORG-ALPHA",
+      "formVersion": "v1",
+      "fields": {
+        "companyName": "阿尔法示例制造有限公司（虚构）",
+        "creditCode": "DEMO-ALPHA-0001",
+        "contactPerson": "王示例",
+        "contactPhone": "13800000001",
+        "reportPeriod": "2026-Q3",
+        "revenue": "2010.4",
+        "taxPaid": "120.6"
+      }
+    }
+  ]
+}

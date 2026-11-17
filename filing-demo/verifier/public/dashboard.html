@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>申报结果看板 · 独立核对服务</title>
+  <style>
+    :root {
+      --ink: #1c2530; --muted: #66727f; --line: #d8dee5;
+      --bg: #f5f6f8; --card: #ffffff;
+      --ok: #2e7d4f; --warn: #9a6a00; --danger: #b03a2e; --info: #2f6fb2;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+    .topbar { display: flex; align-items: center; gap: 12px; padding: 10px 20px; background: var(--card); border-bottom: 1px solid var(--line); }
+    .topbar .brand { font-weight: 700; }
+    .topbar .fictional { font-size: 12px; color: var(--warn); border: 1px solid var(--warn); border-radius: 4px; padding: 1px 6px; }
+    .topbar .spacer { flex: 1; }
+    .topbar .muted { font-size: 12px; }
+    main { max-width: 1080px; margin: 24px auto; padding: 0 20px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 17px; }
+    .muted { color: var(--muted); font-size: 13px; }
+
+    .tiles { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .tile { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 18px; min-width: 130px; }
+    .tile .num { font-size: 26px; font-weight: 700; }
+    .tile .lbl { font-size: 12.5px; color: var(--muted); }
+
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
+
+    .badge { display: inline-block; font-size: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 1px 8px; color: var(--muted); white-space: nowrap; }
+    .badge.ok { color: var(--ok); border-color: var(--ok); }
+    .badge.warn { color: var(--warn); border-color: var(--warn); }
+    .badge.danger { color: var(--danger); border-color: var(--danger); }
+    .badge.info { color: var(--info); border-color: var(--info); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); font-size: 13.5px; vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 12.5px; }
+
+    ul.pending { margin: 6px 0 0; padding-left: 18px; }
+    ul.pending li { margin: 4px 0; font-size: 13.5px; }
+    .pill { display: inline-block; font-size: 11.5px; border-radius: 4px; padding: 0 6px; margin-right: 6px; border: 1px solid var(--danger); color: var(--danger); }
+    .pill.resolved { border-color: var(--ok); color: var(--ok); }
+
+    pre { background: #f2f4f6; border-radius: 6px; padding: 10px 12px; font-size: 12px; overflow-x: auto; margin: 8px 0 0; }
+    details { margin-top: 8px; }
+    summary { cursor: pointer; font-size: 13px; color: var(--info); }
+    .diff-fill { color: var(--warn); }
+    .empty { color: var(--muted); font-size: 13.5px; }
+    button.mini { font-size: 12px; padding: 2px 10px; border-radius: 5px; border: 1px solid var(--info); background: none; color: var(--info); cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">申报结果看板</span>
+    <span class="fictional">独立核对服务 · 虚构演示</span>
+    <span class="spacer"></span>
+    <span class="muted" id="updated"></span>
+  </header>
+  <main>
+    <h1>申报结果与核验</h1>
+    <p class="muted">数据来自自动填写程序的上报与核对服务对门户的独立回查。保存草稿不等于完成申报，只有「已提交且核验一致」才算完成。</p>
+
+    <div class="tiles" id="tiles"></div>
+
+    <section class="panel">
+      <h2>待核验事项</h2>
+      <div id="pending"></div>
+    </section>
+
+    <section class="panel">
+      <h2>申报明细</h2>
+      <div id="items"></div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    const DECISION_BADGE = {
+      '整单重填': 'info', '字段级续填': 'info', '草稿一致': 'ok', '无需提交': 'ok', '终止': 'danger', '未执行': '',
+    };
+    function decisionBadge(decision) {
+      const key = Object.keys(DECISION_BADGE).find((k) => (decision || '').startsWith(k));
+      return `<span class="badge ${DECISION_BADGE[key] || ''}">${esc(decision || '—')}</span>`;
+    }
+    function verificationBadge(v) {
+      if (!v) return '<span class="badge">未核验</span>';
+      if (v.status === 'VERIFIED') return '<span class="badge ok">✓ 核验一致</span>';
+      if (v.status === 'PENDING') return '<span class="badge warn">⧗ 待核验</span>';
+      return '<span class="badge danger">✕ 核验不符</span>';
+    }
+
+    function render(data) {
+      $('#updated').textContent = '更新于 ' + new Date(data.generatedAt).toLocaleTimeString();
+      const items = data.items;
+      const submitted = items.filter((i) => i.receipt).length;
+      const verified = items.filter((i) => i.verification?.status === 'VERIFIED').length;
+      const pendingCount = items.reduce((n, i) => n + i.pendingChecks.length, 0);
+      $('#tiles').innerHTML = [
+        [items.length, '跟踪记录'], [submitted, '已获回执'], [verified, '核验一致'], [pendingCount, '待核验事项'],
+      ].map(([n, l]) => `<div class="tile"><div class="num">${n}</div><div class="lbl">${l}</div></div>`).join('');
+
+      const pendings = items.flatMap((i) => i.pendingChecks.map((p) => ({ recordId: i.recordId, ...p })));
+      $('#pending').innerHTML = pendings.length
+        ? '<ul class="pending">' + pendings.map((p) => `<li><span class="pill">${esc(p.type)}</span><strong>${esc(p.recordId)}</strong> ${esc(p.message)}</li>`).join('') + '</ul>'
+        : '<p class="empty">当前没有待核验事项。</p>';
+
+      $('#items').innerHTML = items.length ? items.map(renderItem).join('') : '<p class="empty">尚无数据。运行自动填写程序后此处会展示结果。</p>';
+    }
+
+    function renderItem(item) {
+      const r = item.report || {};
+      const diffs = r.diffs || [];
+      const incidents = r.incidents || [];
+      const diffRows = diffs.map((d) => `
+        <tr><td>${esc(d.label)}</td><td>${esc(d.pendingValue)}</td><td>${esc(d.draftValue)}</td>
+        <td class="diff-fill">${d.action === 'fill' ? '以待报数据回填' : esc(d.action)}</td></tr>`).join('');
+      const diffTable = diffs.length ? `
+        <details><summary>字段差异（${diffs.length} 处）</summary>
+        <table><thead><tr><th>字段</th><th>待报数据</th><th>门户草稿</th><th>处理</th></tr></thead>
+        <tbody>${diffRows}</tbody></table></details>` : '';
+      const incidentList = incidents.length ? `
+        <ul class="pending">${incidents.map((i) => `
+          <li><span class="pill ${i.resolved ? 'resolved' : ''}">${esc(i.type)}${i.resolved ? '·已处置' : ''}</span>${esc(i.message)}</li>`).join('')}
+        </ul>` : '';
+      const receipt = item.receipt ? `
+        <details><summary>最终回执 ${esc(item.receipt.receiptId)}</summary><pre>${esc(JSON.stringify(item.receipt, null, 2))}</pre></details>` : '';
+      const ver = item.verification;
+      const verReasons = ver && ver.reasons.length ? `<div class="muted">${esc(ver.reasons.join('；'))}</div>` : '';
+      const reverify = item.receipt && ver && ver.status !== 'VERIFIED'
+        ? `<button class="mini" onclick="reverify('${esc(item.recordId)}')">重新核验</button>` : '';
+      return `
+        <table><tbody>
+          <tr>
+            <th style="width:110px">${esc(item.recordId)}</th>
+            <td>
+              ${decisionBadge(r.decision)}
+              <span class="badge">${esc(r.formVersion || '')}</span>
+              <span class="muted">${esc(r.orgId || '')} · 账号 ${esc(r.account || '—')}</span>
+              ${verificationBadge(ver)} ${reverify}
+              ${verReasons}
+              ${diffTable}
+              ${incidentList}
+              ${receipt}
+            </td>
+          </tr>
+        </tbody></table>`;
+    }
+
+    async function reverify(recordId) {
+      await fetch('/api/reverify/' + encodeURIComponent(recordId), { method: 'POST' });
+      poll();
+    }
+
+    async function poll() {
+      try {
+        const res = await fetch('/api/dashboard-data');
+        render(await res.json());
+      } catch (e) { /* 下次轮询再试 */ }
+    }
+    poll();
+    setInterval(poll, 2000);
+  </script>
+</body>
+</html>
